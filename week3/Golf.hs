@@ -35,7 +35,7 @@ getNths :: Divisor -> [a] -> [a]
 getNths d xs = snd $ unzip $ filter ((\d (li,_) -> li `mod` d == 0) d) (zip [1..(length xs)] xs)
 
 --  Skip simply maps "getNths inputList" (with flip, to revese the order of expected arguments) over
---  1..x, where 'x' is the length of the input list. I deliberately started at '1' rather than at the 
+--  1..x, where 'x' is the length of the input list. I deliberately started at '1' rather than at the
 --  more traditional '0', as treating the first element of a list as '1' is important for the logic of
 --  this program.
 --
@@ -44,3 +44,16 @@ getNths d xs = snd $ unzip $ filter ((\d (li,_) -> li `mod` d == 0) d) (zip [1..
 -- (x = 2) == every 2nd element, (x = 5) == every 5th element etc).
 skips :: [a] -> [[a]]
 skips inputList = map (flip getNths inputList) [1..(length inputList)]
+
+{- ex2: Local maxima -}
+-- This simple recursive function pattern-matches out the interesting elements of the input list,
+-- then returns either:
+-- a) a local maxima, 'consed' onto a call to localMaxima, which operates on the tail of the list
+-- b) a call to localMaxima, which operates on the tail of the list
+-- c) an empty list, in the event of an empty, one or two element input list,
+localMaxima :: [Integer] -> [Integer]
+localMaxima [] = []
+localMaxima (x:y:z:as)
+  | x < y && y > z = y : localMaxima (y:z:as)
+  | otherwise      = localMaxima (y:z:as)
+localMaxima (x:xs) = []
