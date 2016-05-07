@@ -57,3 +57,34 @@ localMaxima (x:y:z:as)
   | x < y && y > z = y : localMaxima (y:z:as)
   | otherwise      = localMaxima (y:z:as)
 localMaxima (x:xs) = []
+
+{- ex3: Histogram -}
+histogram :: [Int] -> String
+histogram il = intercalate "" (processList il ++ ["==========\n0123456789\n"])
+
+-- Let's get smarter and start doing much of the heavy lifting in this helper function
+-- This function fills gaps in the list (artificially raising the counts of each individual digit
+-- by one), then we map (-1 +) over the list to correct the inaccuracy. Finally, we pass the
+-- generated list to buildHistogram
+processList :: [Int] -> [String]
+processList il = buildHistogram $ map (-1 +) (map length $ noGaps il)
+
+-- Helper function which concatenates [0..9] onto input list to ensure that we don't have
+-- any missing elements. This is important as we expect the zeroeth list element to contain
+-- the number of zeros, and the fifth list element to contain the number of fives, etc.
+noGaps :: [Int] -> [[Int]]
+noGaps = \x -> group $ sort $ [0..9] ++ x
+
+-- This will take theinput from processList
+buildHistogram :: [Int] -> [String]
+buildHistogram il
+  | maximum il <= 0 = []
+  | otherwise       = (buildHistogram (map (-1 +) il)) ++ ((map starOrSpace il) ++ ["\n"])
+
+-- Use some simple boolean logic, which can be combined with the power of "map"
+-- in order to change our positive-ints to "*" and zero or less to " "
+starOrSpace :: Int -> String
+starOrSpace i
+  | i <= 0 = " "
+  | i > 0  = "*"
+
